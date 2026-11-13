@@ -1,0 +1,7 @@
+{
+  "name": "BONK",
+  "version": "1.0.0",
+  "description": "Listen to Spotify together: P2P playback sync, room codes, and a hand-over-able aux.",
+  "authors": [{ "name": "BONK" }],
+  "tags": ["sync", "p2p", "social", "multiplayer"]
+}

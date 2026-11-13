@@ -1,0 +1,1152 @@
+/* ------------------------------------------------------------------
+   BONK — panneau flottant
+   Langage visuel aligné sur le thème Lucid (Fluent / glassmorphism) :
+   surfaces translucides, filets à 10 % qui passent à 30 % au survol,
+   rayons 8 / 12 / 16 qui s'arrondissent en pilule, flou 28 px saturé.
+   Les tokens --clr-*, --border-*, --br, --m-br, --l-br et
+   --encore-body-font-stack sont hérités de Lucid quand il est actif ;
+   sinon les valeurs de repli gardent le même rendu sur Spotify nu.
+   ------------------------------------------------------------------ */
+
+#bonk-panel {
+  --on-text: var(--clr-on-surface, #f4f2f7);
+  --on-muted: var(--clr-on-surface-variant, #a9a2b6);
+  --on-faint: rgba(var(--clr-on-surface-rgb, 255, 255, 255), 0.42);
+  --on-accent: #a970ff;
+  --on-accent-soft: #c6a8ff;
+  --on-accent-ink: #1a0728;
+  --on-glass: rgba(var(--clr-surface-1-rgb, 24, 24, 28), 0.58);
+  --on-raised: rgba(var(--clr-surface-2-rgb, 36, 36, 42), 0.55);
+  --on-border: var(--border-thickness, 1px) var(--border-style, solid)
+    var(--border-clr, rgba(var(--clr-on-surface-rgb, 255, 255, 255), 0.1));
+  --on-border-hover: var(--border-thickness, 1px) var(--border-style, solid)
+    var(--border-h-clr, rgba(var(--clr-on-surface-rgb, 255, 255, 255), 0.3));
+  --on-blur: blur(28px) saturate(1.5);
+  --on-blur-sm: blur(14px) saturate(1.4);
+  --on-br: var(--br, 8px);
+  --on-br-md: var(--m-br, 12px);
+  --on-br-lg: var(--l-br, 16px);
+  --on-br-xl: var(--xl-br, 32px);
+  --on-ease: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  position: fixed;
+  right: 14px;
+  bottom: 98px;
+  width: 360px;
+  max-height: min(78vh, 700px);
+  z-index: 99999;
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  border: var(--on-border);
+  border-radius: var(--on-br-lg);
+  color: var(--on-text);
+  background:
+    radial-gradient(120% 100% at 0% 0%, rgba(169, 112, 255, 0.13), transparent 62%),
+    var(--on-glass);
+  -webkit-backdrop-filter: var(--on-blur) brightness(0.94);
+  backdrop-filter: var(--on-blur) brightness(0.94);
+  box-shadow:
+    0 28px 72px -32px rgba(0, 0, 0, 0.78),
+    0 1px 3px rgba(0, 0, 0, 0.32),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  font-family: var(
+    --encore-body-font-stack,
+    var(--font-family, "Spotify MixUI", "CircularSp", system-ui, -apple-system, "Segoe UI", sans-serif)
+  );
+  font-size: 13px;
+  line-height: 1.45;
+  text-align: left;
+}
+
+#bonk-panel.bonk-open {
+  display: flex;
+  animation: bonk-in 220ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes bonk-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.988);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ---------------------------- header ---------------------------- */
+
+.bonk-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 13px 14px;
+  border-bottom: var(--on-border);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.bonk-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.bonk-mark {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  flex: none;
+  border: var(--on-border);
+  border-radius: var(--on-br-md);
+  color: var(--on-accent-soft);
+  background: rgba(169, 112, 255, 0.16);
+  transition: border-radius var(--on-ease), border-color var(--on-ease);
+}
+
+.bonk-mark svg {
+  width: 16px;
+  height: 16px;
+}
+
+.bonk-brand-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.bonk-title {
+  font-family: "BONK Display", var(--encore-title-font-stack, "Spotify MixUI Title", system-ui, sans-serif);
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: 0.015em;
+  line-height: 1.12;
+  text-transform: uppercase;
+}
+
+.bonk-subtitle {
+  max-width: 210px;
+  overflow: hidden;
+  font-size: 11px;
+  color: var(--on-muted);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.bonk-head-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bonk-status {
+  width: 6px;
+  height: 6px;
+  flex: none;
+  border-radius: 50%;
+  background: rgba(var(--clr-on-surface-rgb, 255, 255, 255), 0.22);
+}
+
+.bonk-status.live {
+  background: var(--on-accent-soft);
+  box-shadow: 0 0 8px rgba(169, 112, 255, 0.75);
+  animation: bonk-pulse 2.4s ease-out infinite;
+}
+
+@keyframes bonk-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(169, 112, 255, 0.5);
+  }
+  70% {
+    box-shadow: 0 0 0 6px rgba(169, 112, 255, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(169, 112, 255, 0);
+  }
+}
+
+.bonk-icon-btn {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: var(--on-border);
+  border-radius: var(--on-br);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--on-muted);
+  cursor: pointer;
+  transition: border-color var(--on-ease), background var(--on-ease), color var(--on-ease),
+    border-radius var(--on-ease);
+}
+
+.bonk-icon-btn:hover {
+  border: var(--on-border-hover);
+  background: rgba(255, 255, 255, 0.09);
+  color: var(--on-text);
+}
+
+/* ----------------------------- body ----------------------------- */
+
+.bonk-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.bonk-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.bonk-body::-webkit-scrollbar-thumb {
+  border-radius: 99px;
+  background: rgba(var(--clr-on-surface-rgb, 255, 255, 255), 0.22);
+}
+
+.bonk-body::-webkit-scrollbar-thumb:hover {
+  background: rgba(var(--clr-on-surface-rgb, 255, 255, 255), 0.4);
+}
+
+/* ----------------------------- idle ----------------------------- */
+
+.bonk-hero {
+  padding: 10px 8px 2px;
+  text-align: center;
+}
+
+.bonk-hero-mark {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 12px;
+  border: var(--on-border);
+  border-radius: var(--on-br-lg);
+  color: var(--on-accent-soft);
+  background: rgba(169, 112, 255, 0.14);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.bonk-hero-mark svg {
+  width: 22px;
+  height: 22px;
+}
+
+.bonk-hero h2 {
+  margin: 0 0 5px;
+  font-size: 16px;
+  font-weight: 660;
+  letter-spacing: -0.01em;
+}
+
+.bonk-hero p {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--on-muted);
+}
+
+/* ---------------------------- buttons ---------------------------- */
+
+.bonk-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 10px 14px;
+  border: var(--on-border);
+  border-radius: var(--on-br);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--on-text);
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--on-ease), border-color var(--on-ease), border-radius var(--on-ease),
+    opacity var(--on-ease);
+}
+
+.bonk-btn:hover:not(:disabled) {
+  border: var(--on-border-hover);
+  border-radius: var(--on-br-xl);
+  background: rgba(255, 255, 255, 0.09);
+}
+
+.bonk-btn:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+
+.bonk-primary {
+  border: 1px solid transparent;
+  background: var(--on-accent);
+  color: #fff;
+  box-shadow: 0 10px 24px -14px rgba(169, 112, 255, 0.9);
+}
+
+.bonk-primary:hover:not(:disabled) {
+  border-color: transparent;
+  background: #b98cff;
+  box-shadow: 0 14px 28px -14px rgba(169, 112, 255, 0.95);
+}
+
+.bonk-ghost {
+  border-color: transparent;
+  background: transparent;
+  color: var(--on-muted);
+}
+
+.bonk-ghost:hover:not(:disabled) {
+  border-color: transparent;
+  border-radius: var(--on-br-xl);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--on-text);
+}
+
+.bonk-full {
+  width: 100%;
+}
+
+.bonk-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 9.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--on-faint);
+}
+
+.bonk-divider::before,
+.bonk-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: rgba(var(--clr-on-surface-rgb, 255, 255, 255), 0.1);
+}
+
+.bonk-join {
+  display: flex;
+  gap: 8px;
+}
+
+.bonk-input {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 12px;
+  border: var(--on-border);
+  border-radius: var(--on-br);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--on-text);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 640;
+  letter-spacing: 0.22em;
+  text-align: center;
+  text-transform: uppercase;
+  outline: none;
+  transition: border-color var(--on-ease), box-shadow var(--on-ease);
+}
+
+.bonk-input::placeholder {
+  color: var(--on-faint);
+  letter-spacing: 0.22em;
+}
+
+.bonk-input:focus {
+  border-color: rgba(169, 112, 255, 0.65);
+  box-shadow: 0 0 0 3px rgba(169, 112, 255, 0.16);
+}
+
+.bonk-error {
+  padding: 9px 11px;
+  border: 1px solid rgba(243, 114, 127, 0.32);
+  border-radius: var(--on-br);
+  background: rgba(243, 114, 127, 0.1);
+  color: #ffd9df;
+  font-size: 11.5px;
+  line-height: 1.5;
+}
+
+.bonk-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding-top: 2px;
+  font-size: 10.5px;
+  color: var(--on-faint);
+}
+
+/* -------------------------- now playing -------------------------- */
+
+.bonk-np {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 10px;
+  border: var(--on-border);
+  border-radius: var(--on-br-md);
+  background: rgba(255, 255, 255, 0.045);
+  -webkit-backdrop-filter: var(--on-blur-sm);
+  backdrop-filter: var(--on-blur-sm);
+}
+
+.bonk-art {
+  position: relative;
+  width: 54px;
+  height: 54px;
+  flex: none;
+  overflow: hidden;
+  border-radius: var(--on-br);
+  background: rgba(255, 255, 255, 0.07);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.07);
+}
+
+.bonk-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.bonk-art-ph {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  font-size: 20px;
+  color: var(--on-faint);
+}
+
+.bonk-eq {
+  position: absolute;
+  left: 5px;
+  bottom: 5px;
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 11px;
+  padding: 2px 4px;
+  border-radius: 6px;
+  background: rgba(12, 8, 20, 0.72);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+.bonk-eq i {
+  display: block;
+  width: 2.5px;
+  height: 35%;
+  border-radius: 2px;
+  background: var(--on-accent-soft);
+  animation: bonk-bounce 0.85s ease-in-out infinite alternate;
+}
+
+.bonk-eq i:nth-child(2) {
+  animation-delay: 0.14s;
+}
+
+.bonk-eq i:nth-child(3) {
+  animation-delay: 0.32s;
+}
+
+.bonk-eq i:nth-child(4) {
+  animation-delay: 0.06s;
+}
+
+@keyframes bonk-bounce {
+  from {
+    height: 25%;
+  }
+  to {
+    height: 100%;
+  }
+}
+
+.bonk-np-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.bonk-np-label {
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--on-faint);
+}
+
+.bonk-np-title {
+  overflow: hidden;
+  font-size: 13.5px;
+  font-weight: 640;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.bonk-np-artist {
+  overflow: hidden;
+  font-size: 11.5px;
+  color: var(--on-muted);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* --------------------------- progress --------------------------- */
+
+.bonk-progress {
+  height: 3px;
+  overflow: hidden;
+  border-radius: 99px;
+  background: rgba(var(--clr-on-surface-rgb, 255, 255, 255), 0.14);
+  transition: height var(--on-ease), background var(--on-ease);
+}
+
+.bonk-progress-fill {
+  width: 0;
+  height: 100%;
+  border-radius: 99px;
+  background: var(--on-accent-soft);
+  box-shadow: 0 0 10px -2px rgba(198, 168, 255, 0.8);
+  transition: none;
+}
+
+.bonk-progress-live {
+  height: 5px;
+  cursor: pointer;
+}
+
+.bonk-progress-live:hover {
+  height: 7px;
+  background: rgba(169, 112, 255, 0.24);
+}
+
+.bonk-times {
+  display: flex;
+  justify-content: space-between;
+  margin-top: -4px;
+  font-size: 10.5px;
+  font-variant-numeric: tabular-nums;
+  color: var(--on-faint);
+}
+
+/* --------------------------- controls --------------------------- */
+
+.bonk-transport {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 2px 0;
+}
+
+.bonk-round {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: var(--on-border);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--on-text);
+  cursor: pointer;
+  transition: background var(--on-ease), border-color var(--on-ease), transform var(--on-ease);
+}
+
+.bonk-round:hover {
+  border: var(--on-border-hover);
+  background: rgba(255, 255, 255, 0.1);
+  transform: scale(1.04);
+}
+
+.bonk-play {
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: var(--on-accent);
+  color: #fff;
+  box-shadow: 0 12px 26px -12px rgba(169, 112, 255, 0.95);
+}
+
+.bonk-play:hover {
+  border-color: rgba(255, 255, 255, 0.3);
+  background: #b98cff;
+  transform: scale(1.04);
+}
+
+.bonk-host-note {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 3px 0;
+  font-size: 11.5px;
+  color: var(--on-muted);
+}
+
+.bonk-host-note b {
+  color: var(--on-text);
+  font-weight: 620;
+}
+
+.bonk-host-note .bonk-mini {
+  margin-left: 2px;
+}
+
+/* ----------------------------- code ----------------------------- */
+
+.bonk-code {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 9px 11px;
+  border: 1px dashed rgba(169, 112, 255, 0.4);
+  border-radius: var(--on-br-md);
+  background: rgba(169, 112, 255, 0.08);
+  color: var(--on-text);
+  font: inherit;
+  cursor: pointer;
+  transition: background var(--on-ease), border-color var(--on-ease), border-radius var(--on-ease);
+}
+
+.bonk-code:hover {
+  border-color: rgba(198, 168, 255, 0.75);
+  border-radius: var(--on-br-xl);
+  background: rgba(169, 112, 255, 0.14);
+}
+
+.bonk-code-label {
+  font-size: 9.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--on-faint);
+}
+
+.bonk-code-value {
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+}
+
+.bonk-code-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+  font-size: 10.5px;
+  color: var(--on-muted);
+}
+
+/* --------------------------- listeners --------------------------- */
+
+.bonk-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 2px;
+  font-size: 9.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--on-faint);
+}
+
+.bonk-members {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.bonk-member {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 6px 8px;
+  border: 1px solid transparent;
+  border-radius: var(--on-br-md);
+  transition: background var(--on-ease), border-color var(--on-ease);
+}
+
+.bonk-member:hover {
+  border-color: rgba(var(--clr-on-surface-rgb, 255, 255, 255), 0.12);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.bonk-member-host {
+  border-color: rgba(169, 112, 255, 0.32);
+  background: rgba(169, 112, 255, 0.13);
+}
+
+.bonk-member-host:hover {
+  border-color: rgba(169, 112, 255, 0.48);
+  background: rgba(169, 112, 255, 0.17);
+}
+
+.bonk-avatar {
+  width: 25px;
+  height: 25px;
+  flex: none;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 0 0 1px rgba(var(--clr-on-surface-rgb, 255, 255, 255), 0.12);
+}
+
+.bonk-initial {
+  display: grid;
+  place-items: center;
+  font-size: 11.5px;
+  font-weight: 650;
+  color: var(--on-text);
+}
+
+.bonk-member-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  font-size: 12.5px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.bonk-member-name em {
+  font-size: 10.5px;
+  font-style: normal;
+  color: var(--on-faint);
+}
+
+.bonk-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 7px;
+  border: 1px solid rgba(var(--clr-on-surface-rgb, 255, 255, 255), 0.1);
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--on-muted);
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.bonk-tag-host {
+  border-color: rgba(198, 168, 255, 0.35);
+  background: rgba(169, 112, 255, 0.2);
+  color: #f1e9ff;
+}
+
+.bonk-mini {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 9px;
+  border: 1px solid rgba(169, 112, 255, 0.38);
+  border-radius: var(--on-br);
+  background: rgba(169, 112, 255, 0.14);
+  color: #f1e9ff;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--on-ease), border-color var(--on-ease), border-radius var(--on-ease);
+}
+
+.bonk-mini:hover {
+  border-color: rgba(198, 168, 255, 0.8);
+  border-radius: var(--on-br-xl);
+  background: rgba(169, 112, 255, 0.24);
+}
+
+.bonk-mini-ghost {
+  border-color: rgba(var(--clr-on-surface-rgb, 255, 255, 255), 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--on-muted);
+}
+
+.bonk-mini-ghost:hover {
+  border-color: rgba(var(--clr-on-surface-rgb, 255, 255, 255), 0.3);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--on-text);
+}
+
+.bonk-trigger-on {
+  color: var(--on-accent-soft) !important;
+}
+
+@media (max-width: 700px) {
+  #bonk-panel {
+    right: 8px;
+    left: 8px;
+    bottom: 94px;
+    width: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #bonk-panel,
+  .bonk-eq i,
+  .bonk-status.live,
+  .bonk-trigger-ping {
+    animation: none !important;
+  }
+
+  #bonk-panel * {
+    transition: none !important;
+  }
+}
+
+/* ------------------------------ duo ------------------------------ */
+
+.bonk-duo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 9px;
+  border: var(--on-border);
+  border-radius: var(--on-br-md);
+  background: rgba(255, 255, 255, 0.045);
+  -webkit-backdrop-filter: var(--on-blur-sm);
+  backdrop-filter: var(--on-blur-sm);
+}
+
+.bonk-duo-icon {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  flex: none;
+  border: 1px solid rgba(169, 112, 255, 0.28);
+  border-radius: var(--on-br);
+  background: rgba(169, 112, 255, 0.16);
+  color: var(--on-accent-soft);
+}
+
+.bonk-duo-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.bonk-duo-text b {
+  overflow: hidden;
+  font-size: 12.5px;
+  font-weight: 620;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.bonk-duo-text small {
+  font-size: 10.5px;
+  color: var(--on-muted);
+}
+
+.bonk-duo-code {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 9px;
+  border: var(--on-border);
+  border-radius: var(--on-br);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.bonk-duo-code b {
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: var(--on-text);
+}
+
+.bonk-duo-code .bonk-mini {
+  margin-left: auto;
+}
+
+.bonk-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+}
+
+.bonk-trigger-ping {
+  animation: bonk-ring 1.8s ease-out infinite;
+}
+
+@keyframes bonk-ring {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+/* ----------------------------- stats ----------------------------- */
+
+.bonk-stats-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 10px;
+  border: var(--on-border);
+  border-radius: var(--on-br-md);
+  background: rgba(255, 255, 255, 0.045);
+  color: var(--on-text);
+  font: inherit;
+  cursor: pointer;
+  transition: background var(--on-ease), border-color var(--on-ease), border-radius var(--on-ease);
+}
+
+.bonk-stats-head:hover {
+  border: var(--on-border-hover);
+  border-radius: var(--on-br-xl);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.bonk-stats-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--on-muted);
+  white-space: nowrap;
+}
+
+.bonk-stats-summary {
+  flex: 1;
+  overflow: hidden;
+  font-size: 11px;
+  color: var(--on-faint);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  text-align: right;
+}
+
+.bonk-chevron {
+  font-size: 9px;
+  color: var(--on-faint);
+}
+
+.bonk-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.bonk-stats-grid > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  padding: 9px 4px;
+  border: var(--on-border);
+  border-radius: var(--on-br-md);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.bonk-stats-grid b {
+  font-size: 14px;
+  font-weight: 680;
+  letter-spacing: -0.01em;
+}
+
+.bonk-stats-grid small {
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--on-faint);
+}
+
+.bonk-top {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.bonk-top-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 6px;
+  border: 1px solid transparent;
+  border-radius: var(--on-br);
+  transition: background var(--on-ease), border-color var(--on-ease);
+}
+
+.bonk-top-row:hover {
+  border-color: rgba(var(--clr-on-surface-rgb, 255, 255, 255), 0.1);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.bonk-top-art {
+  width: 24px;
+  height: 24px;
+  flex: none;
+  border-radius: 6px;
+  object-fit: cover;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.bonk-top-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.bonk-top-info b {
+  overflow: hidden;
+  font-size: 11.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.bonk-top-info small {
+  overflow: hidden;
+  font-size: 10px;
+  color: var(--on-faint);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.bonk-count {
+  padding: 1px 7px;
+  border: 1px solid rgba(198, 168, 255, 0.3);
+  border-radius: 99px;
+  background: rgba(169, 112, 255, 0.16);
+  font-size: 10px;
+  font-weight: 650;
+  color: #f1e9ff;
+}
+
+.bonk-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.bonk-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 9px;
+  border: var(--on-border);
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.05);
+  font-size: 10.5px;
+  color: var(--on-muted);
+}
+
+.bonk-chip b {
+  color: var(--on-text);
+  font-weight: 650;
+}
+
+.bonk-stats-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.bonk-stats-empty {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 10px;
+  border: 1px dashed rgba(169, 112, 255, 0.24);
+  border-radius: var(--on-br-md);
+  background: rgba(255, 255, 255, 0.03);
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--on-muted);
+}
+
+.bonk-mini-danger {
+  border-color: rgba(243, 114, 127, 0.5);
+  background: rgba(243, 114, 127, 0.16);
+  color: #ffd9df;
+}
+
+.bonk-mini-danger:hover {
+  border-color: rgba(243, 114, 127, 0.8);
+  background: rgba(243, 114, 127, 0.24);
+}
+
+/* ------------------------- sauvegarde en ligne ------------------------- */
+
+.bonk-cloud {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 9px 10px;
+  border: 1px dashed rgba(169, 112, 255, 0.24);
+  border-radius: var(--on-br-md);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.bonk-cloud-head {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--on-muted);
+}
+
+.bonk-cloud-note {
+  font-size: 10px;
+  line-height: 1.45;
+  color: var(--on-faint);
+}
+
+
+.bonk-duo-code-big {
+  padding: 14px 12px;
+}
+
+.bonk-duo-code-big b {
+  font-size: 22px;
+  letter-spacing: 0.16em;
+}
+
+.bonk-mini-on {
+  color: #e9dcff;
+  border-color: rgba(169, 112, 255, 0.5);
+  background: rgba(169, 112, 255, 0.18);
+}
+
+.bonk-duo-live {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: var(--on-br-md);
+  background: rgba(169, 112, 255, 0.1);
+  border: 1px solid rgba(169, 112, 255, 0.2);
+}
+
+.bonk-duo-live-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--on-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
