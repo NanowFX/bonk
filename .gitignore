@@ -2,3 +2,4 @@ node_modules/
 test/bonk.test.js
 *.log
 .DS_Store
+preview/

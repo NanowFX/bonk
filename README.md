@@ -20,7 +20,9 @@ BONK est une extension [Spicetify](https://spicetify.app) : elle ajoute un bouto
 
 ## Installation
 
-Dans PowerShell :
+**Depuis le Marketplace de Spicetify** (le plus simple) : ouvre Marketplace dans Spotify, onglet Extensions, cherche « BONK » et clique sur Install.
+
+**Sinon, en une ligne** dans PowerShell :
 
 ```powershell
 irm https://raw.githubusercontent.com/NanowFX/bonk/main/install.ps1 | iex

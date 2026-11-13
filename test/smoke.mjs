@@ -464,5 +464,11 @@ check(
   JSON.stringify(notes.slice(-2)),
 );
 
+if (process.env.BONK_DUMP) {
+  const fs = await import("node:fs");
+  fs.writeFileSync(process.env.BONK_DUMP, panel.outerHTML);
+  console.log(`panneau exporté vers ${process.env.BONK_DUMP}`);
+}
+
 console.log(failures.length ? `\n${failures.length} échec(s)` : "\ntous les contrôles passent");
 process.exit(failures.length ? 1 : 0);

@@ -1,7 +1,9 @@
 {
   "name": "BONK",
-  "version": "1.0.0",
-  "description": "Listen to Spotify together: P2P playback sync, room codes, and a hand-over-able aux.",
-  "authors": [{ "name": "BONK" }],
-  "tags": ["sync", "p2p", "social", "multiplayer"]
+  "description": "Écoutez Spotify à deux en même temps : duo permanent, hôte transférable, stats de la paire.",
+  "preview": "preview.png",
+  "main": "dist/bonk.js",
+  "readme": "README.md",
+  "authors": [{ "name": "NanowFX", "url": "https://github.com/NanowFX" }],
+  "tags": ["duo", "sync", "social", "peer-to-peer"]
 }
