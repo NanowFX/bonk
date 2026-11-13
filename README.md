@@ -1,73 +1,75 @@
+<img src="preview.png" width="220" alt="BONK">
+
 # BONK
 
-Écouter Spotify à deux, en même temps, sur le même morceau — avec un hôte qu'on peut passer à l'autre quand on veut choisir la musique.
+Listen to Spotify with someone else, at the same time, on the same track — with a host you can hand over whenever the other person should be the one picking the music.
 
-BONK est une extension [Spicetify](https://spicetify.app) : elle ajoute un bouton dans la barre de lecture et un panneau qui gère la session, les rôles et les stats du duo.
+BONK is a [Spicetify](https://spicetify.app) extension: it adds a button to the playbar and a panel that manages the session, the roles and the duo stats.
 
-## Ce qu'elle fait
+## What it does
 
-- **Session temporaire** : on crée, on partage un code, on écoute ensemble.
-- **Duo permanent** : une invitation à deux, qui devient un duo dès que l'autre saisit le code — plus besoin de le retaper ensuite.
-- **Hôte transférable** : celui qui rejoint est auditeur, l'autre est hôte ; l'hôte peut repasser le rôle (c'est ce qui change qui choisit la musique).
-- **Veille et rejoindre** : quitter une session duo ne coupe pas le lien — tu vois ce que l'autre écoute et tu peux le rejoindre, ou activer « Rejoindre auto ».
-- **Stats de la paire** : titres, temps écouté, tops — rattachés aux deux comptes, pas à l'installation.
-- **Sauvegarde en ligne** : le duo et ses stats reviennent après une réinstallation, via une empreinte de ton compte (le compte lui-même n'est jamais transmis).
+- **Temporary session** — create one, share the code, listen together.
+- **Permanent duo** — a two-person invite that becomes a duo as soon as the other person enters the code, so nobody has to type it again.
+- **Transferable host** — whoever joins is a listener, the other one is the host; the host can pass the role on, which is what decides who picks the music.
+- **Watch and join** — leaving a duo session doesn't cut the link: you can see what the other person is playing and join them, or turn on **auto-join**.
+- **Duo stats** — tracks, listening time, top artists and songs, tied to the two accounts rather than to a single install.
+- **Online backup** — the duo and its stats come back after a reinstall through a fingerprint of your account; the account itself is never sent.
 
-## Prérequis
+## Requirements
 
-- Spotify pour ordinateur (Windows)
-- [Spicetify](https://spicetify.app/docs/getting-started) installé et fonctionnel
+- Spotify for desktop (Windows)
+- [Spicetify](https://spicetify.app/docs/getting-started) installed and working
 
-## Installation
+## Install
 
-**Depuis le Marketplace de Spicetify** (le plus simple) : ouvre Marketplace dans Spotify, onglet Extensions, cherche « BONK » et clique sur Install.
+**From Spicetify Marketplace** (easiest): open Marketplace in Spotify, go to the Extensions tab, search for “BONK” and hit Install.
 
-**Sinon, en une ligne** dans PowerShell :
+**Or, in one line**, in PowerShell:
 
 ```powershell
 irm https://raw.githubusercontent.com/NanowFX/bonk/main/install.ps1 | iex
 ```
 
-Le script télécharge la dernière version, l'active dans Spicetify, l'applique, puis installe la mise à jour automatique. Redémarre Spotify ensuite.
+The script downloads the latest build, enables it in Spicetify, applies the changes and sets up automatic updates. Restart Spotify afterwards.
 
-### Mise à jour automatique
+### Automatic updates
 
-`install.ps1` enregistre une tâche planifiée `BonkUpdate` (au démarrage et toutes les 6 heures) qui compare l'empreinte de l'extension installée à celle publiée dans [`version.json`](version.json) et remplace le fichier si besoin. Si la tâche ne peut pas être créée, un raccourci est déposé dans le dossier Démarrage.
+`install.ps1` registers a scheduled task named `BonkUpdate` (at sign-in and every 6 hours) that compares the fingerprint of the installed extension with the one published in [`version.json`](version.json) and replaces the file when needed. If the task can't be created, a shortcut is dropped into the Startup folder instead.
 
-Pour la couper : `Unregister-ScheduledTask -TaskName BonkUpdate -Confirm:$false`.
-Pour la forcer à la main : `powershell -ExecutionPolicy Bypass -File "$env:LOCALAPPDATA\bonk\update.ps1" -Force`.
+To turn it off: `Unregister-ScheduledTask -TaskName BonkUpdate -Confirm:$false`.
+To run it by hand: `powershell -ExecutionPolicy Bypass -File "$env:LOCALAPPDATA\bonk\update.ps1" -Force`.
 
-### Installation manuelle
+### Manual install
 
-Télécharge [`dist/bonk.js`](dist/bonk.js), place-le dans `%APPDATA%\spicetify\Extensions\`, puis :
+Download [`dist/bonk.js`](dist/bonk.js), drop it into `%APPDATA%\spicetify\Extensions\`, then:
 
 ```powershell
 spicetify config extensions bonk.js
 spicetify apply
 ```
 
-## Désinstallation
+## Uninstall
 
 ```powershell
 spicetify config extensions bonk.js-
 spicetify apply
 ```
 
-Puis supprime `%APPDATA%\spicetify\Extensions\bonk.js` et, si tu veux, `%LOCALAPPDATA%\bonk`.
+Then delete `%APPDATA%\spicetify\Extensions\bonk.js` and, if you want, `%LOCALAPPDATA%\bonk`.
 
-## Développement
+## Development
 
 ```powershell
 npm install
-npm test          # harnais jsdom, sans Spotify
+npm test          # jsdom harness, no Spotify needed
 npm run build     # dist/bonk.js
 npm run install:plugin
-npm run release   # build + version.json (empreinte pour l'auto-update)
+npm run release   # build + version.json (fingerprint for the auto-update)
 ```
 
-- `src/bonk.js` : toute l'extension (état, réseau PeerJS, duo, rôles, stats, rendu).
-- `src/panel.css` : le panneau, en verre dépoli.
-- `cloud/` : le petit service de sauvegarde (Worker Cloudflare + D1).
-- `test/` : harnais de bout en bout avec un faux PeerJS.
+- `src/bonk.js` — the whole extension (state, PeerJS networking, duo, roles, stats, rendering).
+- `src/panel.css` — the frosted-glass panel.
+- `cloud/` — the small backup service (Cloudflare Worker + D1).
+- `test/` — end-to-end harness with a fake PeerJS.
 
-L'extension ne passe par aucun serveur pour l'audio : les navigateurs se parlent en pair-à-pair via PeerJS.
+No server sits in the path of the audio: the clients talk to each other peer-to-peer through PeerJS.
