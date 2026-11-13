@@ -1,7 +1,7 @@
 {
   "name": "spicetify-bonk",
   "private": false,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "description": "Spicetify extension: listen to Spotify together, in sync, with a hand-over-able aux.",
   "scripts": {

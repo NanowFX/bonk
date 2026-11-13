@@ -1,4 +1,4 @@
-#Requires -Version 5.1
+﻿#Requires -Version 5.1
 <#
     BONK — vérificateur de mise à jour (silencieux).
 

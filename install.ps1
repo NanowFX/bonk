@@ -1,4 +1,4 @@
-#Requires -Version 5.1
+﻿#Requires -Version 5.1
 <#
     BONK — installation et mise à jour pour Spicetify.
 
@@ -17,6 +17,7 @@ param(
 
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
+try { [Console]::OutputEncoding = [System.Text.Encoding]::UTF8 } catch { }
 
 $raw = "https://raw.githubusercontent.com/$Repo/main"
 $extensionsDir = Join-Path $env:APPDATA 'spicetify\Extensions'
@@ -104,11 +105,23 @@ if (-not $NoAutoUpdate) {
             $settings = New-ScheduledTaskSettingsSet -StartWhenAvailable -AllowStartIfOnBatteries `
                 -DontStopIfGoingOnBatteries -ExecutionTimeLimit (New-TimeSpan -Minutes 5)
             Register-ScheduledTask -TaskName 'BonkUpdate' -Action $action -Trigger @($atLogon, $every6h) `
-                -Settings $settings -Description 'Met à jour l extension Spicetify BONK.' -Force | Out-Null
+                -Settings $settings -Description 'Met a jour l extension Spicetify BONK.' -Force `
+                -ErrorAction Stop | Out-Null
             $registered = $true
-            Write-Ok "Mise à jour automatique activée (tâche planifiée BonkUpdate)."
         } catch {
             $registered = $false
+        }
+
+        if (-not $registered) {
+            # Certains profils Windows refusent Register-ScheduledTask alors que
+            # schtasks, lui, passe sans droits administrateur.
+            & schtasks /create /tn 'BonkUpdate' /sc onlogon /f `
+                /tr "powershell.exe -NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File `"$updater`"" 2>$null | Out-Null
+            $registered = ($LASTEXITCODE -eq 0)
+        }
+
+        if ($registered) {
+            Write-Ok "Mise a jour automatique activee (tache planifiee BonkUpdate)."
         }
 
         if (-not $registered) {

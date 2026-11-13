@@ -11,6 +11,7 @@ await build({
   target: "chrome100",
   logLevel: "error",
   loader: { ".css": "text", ".woff2": "dataurl" },
+  define: { __BONK_VERSION__: JSON.stringify("test") },
   plugins: [
     {
       name: "fake-peer",

@@ -328,6 +328,22 @@ function unbindDuo() {
 
 const CLOUD_URL = "https://site-a91ec02422f5470481e7129658fcceb1.freebuff.page/v1/duo";
 const CLOUD_KEY = "bonk.duo.k";
+const UPDATE_URL = "https://raw.githubusercontent.com/NanowFX/bonk/main/version.json";
+const BUILD_VERSION = __BONK_VERSION__;
+
+/** L'extension ne peut pas se remplacer elle-même : elle prévient au moins. */
+async function checkUpdate() {
+  try {
+    const response = await fetch(`${UPDATE_URL}?t=${Date.now()}`, { cache: "no-store" });
+    if (!response.ok) return;
+    const meta = await response.json();
+    if (!meta?.version || meta.version === BUILD_VERSION) return;
+    log("update", `${meta.version} disponible`);
+    notify(`BONK ${meta.version} disponible · relance l'installeur`);
+  } catch (error) {
+    log("update check", error);
+  }
+}
 
 let CLOUD_KEY_CACHE = "";
 
@@ -2286,5 +2302,6 @@ function tick() {
   window.addEventListener("beforeunload", () => {
     if (S.joined) leave(true);
   });
-  log("prêt");
+  log("prêt · v" + BUILD_VERSION);
+  window.setTimeout(checkUpdate, 8000);
 })();
