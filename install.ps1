@@ -114,10 +114,14 @@ if (-not $NoAutoUpdate) {
 
         if (-not $registered) {
             # Certains profils Windows refusent Register-ScheduledTask alors que
-            # schtasks, lui, passe sans droits administrateur.
+            # schtasks, lui, passe sans droits administrateur. L'erreur est
+            # volontairement silencieuse : on passe au repli juste après.
+            $silent = $ErrorActionPreference
+            $ErrorActionPreference = 'SilentlyContinue'
             & schtasks /create /tn 'BonkUpdate' /sc onlogon /f `
                 /tr "powershell.exe -NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File `"$updater`"" 2>$null | Out-Null
             $registered = ($LASTEXITCODE -eq 0)
+            $ErrorActionPreference = $silent
         }
 
         if ($registered) {
